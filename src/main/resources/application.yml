@@ -1,0 +1,141 @@
+# application.yml
+
+server:
+    port: 8080
+    
+mqtt:
+    host: ${RABBITMQ_PORT_1883_TCP_ADDR}
+    port: ${RABBITMQ_PORT_1883_TCP_PORT}
+    protocol: ${RABBITMQ_PORT_1883_TCP_PROTO}
+    username: ''
+    password: ''
+
+knx:
+    router: 192.168.178.52
+    nat: true
+    groupAddresses:
+    # licht
+      - address: 1
+        dpt: '1.001'
+        text: 'Licht Küche'
+      - address: 2
+        dpt: '1.001'
+        text: 'Licht Kinderzimmer Süd'
+      - address: 3
+        dpt: '1.001'
+        text: 'Licht Arbeitszimmer'
+      - address: 4
+        dpt: '1.001'
+        text: 'Licht Kinderzimmer Nord'
+      - address: 5
+        dpt: '1.001'
+        text: 'Licht Bad'
+      - address: 6
+        dpt: '1.001'
+        text: 'Licht WC'
+      - address: 7
+        dpt: '1.001'
+        text: 'Licht Kammer'
+      - address: 8
+        dpt: '1.001'
+        text: 'Licht Ankleide'
+      - address: 9
+        dpt: '1.001'
+        text: 'Licht Flur'
+      - address: 10
+        dpt: '1.001'
+        text: 'Licht Schlafzimmer'
+      - address: 11
+        dpt: '1.001'
+        text: 'Licht Essplatz'
+      - address: 12
+        dpt: '1.001'
+        text: 'Licht Wohnzimmer Süd'
+      - address: 13
+        dpt: '1.001'
+        text: 'Licht Wohnzimmer Nord'
+      - address: 14
+        dpt: '1.001'
+        text: 'Licht Wohnzimmer'
+    # temperaturen
+      - address: 701
+        dpt: '9.001'
+        text: 'Ankleide Tür'
+      - address: 702
+        dpt: '9.001'
+        text: 'Arbeitszimmer Tür'
+        topics:
+          - 'places/house/floor/first/homeoffice/temperature'
+          - 'functions/temperatures/homeoffice' 
+      - address: 703
+        dpt: '9.001'
+        text: 'Schlafzimmer gesamt'
+      - address: 704
+        dpt: '9.001'
+        text: 'Kinderzimmer Süd Tür'
+      - address: 705
+        dpt: '9.001'
+        text: 'Kinderzimmer Nord Tür'
+      - address: 706
+        dpt: '9.001'
+        text: 'Bad Tür'
+      - address: 707
+        dpt: '9.001'
+        text: 'WC Tür'
+      - address: 708
+        dpt: '9.001'
+        text: 'Flur gesamt'
+      - address: 709
+        dpt: '9.001'
+        text: 'Wohnzimmer gesamt'
+      - address: 710
+        dpt: '9.001'
+        text: 'Kammer'
+      - address: 711
+        dpt: '9.001'
+        text: 'Schlafzimmer Tür'
+      - address: 712
+        dpt: '9.001'
+        text: 'Schlafzimmer Bett links'
+      - address: 713
+        dpt: '9.001'
+        text: 'Schlafzimmer Bett rechts'
+      - address: 714
+        dpt: '9.001'
+        text: 'Wohnzimmer Tür'
+      - address: 715
+        dpt: '9.001'
+        text: 'Wohnzimmer Schiebetür links'
+      - address: 716
+        dpt: '9.001'
+        text: 'Wohnzimmer Schiebetür rechts'
+    # heizung stellwert
+      - address: 759
+        dpt: '5.001'
+        text: 'Wohnzimmer Stellwert Heizung'
+    # rolläden
+      - address: 801
+        dpt: '1.008'
+        text: 'Rolladen Kinderzimmer Süd Süd'
+      - address: 803
+        dpt: '1.008'
+        text: 'Rolladen Kinderzimmer Süd West'
+      - address: 805
+        dpt: '1.008'
+        text: 'Rolladen Arbeitszimmer'
+      - address: 807
+        dpt: '1.010'
+        text: 'Rolladen Arbeitszimmer fährt'
+    # fenstersensoren
+      - address: 906
+        dpt: '1.002'
+        text: 'Fenster Arbeitszimmer Offen'
+      - address: 907
+        dpt: '1.002'
+        text: 'Fenster Arbeitszimmer Kipp'
+            
+logging:
+    level:
+        it.peterhansl: 'DEBUG'
+        tuwien.auto.calimero: 'DEBUG'
+    
