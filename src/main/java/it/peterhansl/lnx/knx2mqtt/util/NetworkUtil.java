@@ -4,6 +4,13 @@ import java.net.InetAddress;
 
 public class NetworkUtil {
 
+
+	private static final String SYSTEM_PROPERTY_OS_NAME = "os.name";
+	private static final String OS_NAME_WINDOWS = "windows";
+	
+	private static final String WINDOWS_PING_CMD = "ping -n 1 ";
+	private static final String UNIX_PING_CMD = "ping -c 1 ";
+
 	/**
 	 * 
 	 * Method taken from http://stackoverflow.com/questions/2448666/how-to-do-a-true-java-ping-from-windows
@@ -14,12 +21,12 @@ public class NetworkUtil {
 	public static boolean ping(InetAddress host) {
 		try {
 			String cmd = "";
-			if (System.getProperty("os.name").startsWith("Windows")) {
+			if (System.getProperty(SYSTEM_PROPERTY_OS_NAME).toLowerCase().startsWith(OS_NAME_WINDOWS)) {
 				// For Windows
-				cmd = "ping -n 1 " + host.getHostAddress();
+				cmd = WINDOWS_PING_CMD + host.getHostAddress();
 			} else {
 				// For Linux and OSX
-				cmd = "ping -c 1 " + host.getHostAddress();
+				cmd = UNIX_PING_CMD + host.getHostAddress();
 			}
 
 			Process myProcess = Runtime.getRuntime().exec(cmd);

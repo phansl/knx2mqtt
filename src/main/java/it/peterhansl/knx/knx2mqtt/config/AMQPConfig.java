@@ -7,16 +7,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import it.peterhansl.knx.knx2mqtt.gateway.AMQPGateway;
 import it.peterhansl.knx.knx2mqtt.gateway.BusEventGateway;
-import it.peterhansl.knx.knx2mqtt.gateway.MqttGateway;
 import lombok.Data;
 
 @Component
-@ConfigurationProperties(prefix = "mqtt")
+@ConfigurationProperties(prefix = "amqp")
 @Data
-public class MQTTConfig {
+public class AMQPConfig {
 	
-	private static final String DEFAULT_CLIENT_NAME = "knx2mqtt";
+	private static final String DEFAULT_CLIENT_NAME = "knx2amqp";
 
 	private String clientName;
 	
@@ -31,9 +31,9 @@ public class MQTTConfig {
 	private String password;
 	
 	@Bean
-	@ConditionalOnProperty(prefix = "mqtt", value = "host", matchIfMissing = false)
+	@ConditionalOnProperty(prefix = "amqp", value = "host", matchIfMissing = false)
 	public BusEventGateway busEventGateway() {
-		return new MqttGateway(this);
+		return new AMQPGateway(this);
 	}
 
 	public String getClientName() {

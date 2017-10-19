@@ -9,8 +9,16 @@ mqtt:
     protocol: ${RABBITMQ_PORT_1883_TCP_PROTO}
     username: ''
     password: ''
+    
+amqp:
+   host: 127.0.0.1
+   port: 0
+   protocol:
+   username: 
+   password: 
 
 knx:
+    local: 192.168.178.62
     router: 192.168.178.52
     nat: true
     groupAddresses:
@@ -133,7 +141,13 @@ knx:
       - address: 907
         dpt: '1.002'
         text: 'Fenster Arbeitszimmer Kipp'
-            
+
+spring:
+    jackson:
+        serialization:
+            INDENT_OUTPUT: true
+            order-map-entries-by-keys: true
+
 logging:
     level:
         it.peterhansl: 'DEBUG'

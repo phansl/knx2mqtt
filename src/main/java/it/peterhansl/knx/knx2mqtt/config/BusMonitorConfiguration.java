@@ -11,6 +11,11 @@ import org.springframework.stereotype.Component;
 public class BusMonitorConfiguration {
 	
 	/**
+	 * local IP in same network segment as router
+	 */
+	private InetAddress local;
+	
+	/**
 	 * IP or hostname of the knx router
 	 */
 	private InetAddress router;
@@ -18,6 +23,14 @@ public class BusMonitorConfiguration {
 	private boolean nat = false;
 	
 	private List<GroupAddressConfig> groupAddresses;
+
+	public InetAddress getLocal() {
+		return local;
+	}
+
+	public void setLocal(InetAddress local) {
+		this.local = local;
+	}
 
 	public InetAddress getRouter() {
 		return router;

@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.stereotype.Component;
 
+import it.peterhansl.iot.dahome.knx.model.BusEvent;
 import it.peterhansl.knx.knx2mqtt.config.BusMonitorConfiguration;
 import it.peterhansl.knx.knx2mqtt.config.GroupAddressConfig;
-import it.peterhansl.knx.knx2mqtt.gateway.MqttGateway;
-import it.peterhansl.knx.knx2mqtt.message.KNXMQTTMessage;
+import it.peterhansl.knx.knx2mqtt.gateway.BusEventGateway;
 import tuwien.auto.calimero.DetachEvent;
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.datapoint.CommandDP;
@@ -37,7 +37,7 @@ public class BusProcessListener extends ProcessListenerEx implements ProcessList
 	private CounterService counterService;
 	
 	@Autowired
-	private MqttGateway gateway;
+	private BusEventGateway gateway;
 	
 	private DatapointMap datapoints;
 	
@@ -87,13 +87,13 @@ public class BusProcessListener extends ProcessListenerEx implements ProcessList
 				}
 			}
 			
-			KNXMQTTMessage msg = new KNXMQTTMessage();
-			msg.setAddress(groupWriteEvent.getDestination().getRawAddress());
-			msg.setDpt(dp.getDPT());
-			msg.setName(dp.getName());
-			msg.setValue(groupWriteEvent.getASDU());
+			BusEvent msg = new BusEvent(
+					dp.getName(),
+					groupWriteEvent.getDestination().getRawAddress(),
+					dp.getDPT(),
+					groupWriteEvent.getASDU());
 			
-			gateway.publish("home/test", msg.toMqtt(), true);
+			gateway.publishAsync("home/test", msg);
 			
 			LOG.debug("groupWrite to {} [{}] - {}: {}", 
 					groupWriteEvent.getDestination(), 

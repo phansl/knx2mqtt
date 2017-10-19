@@ -4,7 +4,6 @@ import java.net.InetSocketAddress;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.xml.ws.ServiceMode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +47,8 @@ public class BusMonitor {
 	public BusMonitor(BusMonitorConfiguration busMonitorConfiguration) {
 		this.busMonitorConfiguration = busMonitorConfiguration;
 		
+		System.out.println("LOG = " + LOG);
+		
 		LOG.debug("construct BusMonitor");
 		LOG.debug("BusMonitor listening to router at {}", busMonitorConfiguration.getRouter().getHostAddress());
 	}
@@ -86,14 +87,14 @@ public class BusMonitor {
 	private void open() {
 		try {
 			if (busMonitorConfiguration.isNat()) {
-				knxLink = new KNXNetworkLinkIP(KNXNetworkLinkIP.TUNNELING, null, new InetSocketAddress(busMonitorConfiguration.getRouter().getHostAddress(), KNXnetIPConnection.DEFAULT_PORT), true, TPSettings.TP1);
+				knxLink = new KNXNetworkLinkIP(KNXNetworkLinkIP.TUNNELING, new InetSocketAddress(busMonitorConfiguration.getLocal().getHostAddress(), 0), new InetSocketAddress(busMonitorConfiguration.getRouter().getHostAddress(), KNXnetIPConnection.DEFAULT_PORT), true, TPSettings.TP1);
 			} else {
 				knxLink = new KNXNetworkLinkIP(busMonitorConfiguration.getRouter().getHostAddress(), TPSettings.TP1);
 			}
 			LOG.debug("knx link established via router {}, NAT={}", busMonitorConfiguration.getRouter().getHostAddress(), busMonitorConfiguration.isNat());
 		} catch (KNXException | InterruptedException e) {
 			LOG.error("Cannot establish route to knx via router {}, NAT={}", busMonitorConfiguration.getRouter().getHostAddress(), busMonitorConfiguration.isNat());
-			System.err.println(e);
+			LOG.debug("", e);
 		}
 	}
 	

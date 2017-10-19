@@ -1,20 +1,19 @@
 package it.peterhansl.knx.knx2mqtt.gateway;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
-import org.springframework.stereotype.Component;
 
+import it.peterhansl.iot.dahome.knx.model.BusEvent;
 import it.peterhansl.knx.knx2mqtt.config.MQTTConfig;
+import it.peterhansl.lnx.knx2mqtt.util.BusEventMapper;
 
 /**
  * 
@@ -23,13 +22,11 @@ import it.peterhansl.knx.knx2mqtt.config.MQTTConfig;
  * @author Philip
  *
  */
-@Component
-public class MqttGateway {
+public class MqttGateway implements BusEventGateway {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(MqttGateway.class);
 	
-	@Inject
-	private MQTTConfig mqttConfig;
+	private final MQTTConfig mqttConfig;
 	
 	@Autowired
 	private CounterService counterService;
@@ -39,50 +36,63 @@ public class MqttGateway {
 	//TODO make persistence configurable (either MemoryPersistence or FilePErsistence)
 	private MqttClientPersistence persistence = new MemoryPersistence();
 	
+	public MqttGateway(MQTTConfig config) {
+		this.mqttConfig = config;
+	}
+	
 	@PostConstruct
 	public void initialize() {
 		
 		try {
 			client = new MqttClient(mqttConfig.getConnectionURLString(), mqttConfig.getClientName(), persistence);
+			connect();
 		} catch (MqttException e) {
 			LOG.error("unable to initialize mqtt client", e);
 		}
 		
 	}
 	
-	public void publish(final String topic, final MqttMessage message) {
-		publish(topic, message, false);
-	}
-	
-	public void publish(final String topic, final MqttMessage message, final boolean async) {
+	/* (non-Javadoc)
+	 * @see it.peterhansl.knx.knx2mqtt.gateway.BusEventGateway#publishAsync(java.lang.String, it.peterhansl.iot.dahome.knx.model.BusEvent)
+	 */
+	@Override
+	public void publishAsync(final String topic, final BusEvent message) {
 		
 		if (!client.isConnected()) {
-			connect();
+			return;
 		}
 		
-		if (async) {
-			Runnable asyncPublish = () -> { publish(client, topic, message); };
-			new Thread(asyncPublish).start();
-		} else {
-			publish(client, topic, message);
-		}
+		Runnable asyncPublish = () -> { publishSync(topic, message); };
+		new Thread(asyncPublish).start();
 		
 	}
 	
-	private final void publish(MqttClient client, String topic, MqttMessage message) {
+	/* (non-Javadoc)
+	 * @see it.peterhansl.knx.knx2mqtt.gateway.BusEventGateway#publishSync(java.lang.String, it.peterhansl.iot.dahome.knx.model.BusEvent)
+	 */
+	@Override
+	public void publishSync(String topic, BusEvent message) {
 		try {
-			client.publish(topic, message);
+			client.publish(topic, BusEventMapper.toMqtt(message));
 			// update metrics
 			counterService.increment("counter.mqtt.messages.total");
 		} catch (MqttException e) {
-			LOG.error("failed to publish message to topic {} on server {}", topic, client.getServerURI());
+			LOG.error("failed to publish mqtt message to topic {} on server {}", topic, client.getServerURI());
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.peterhansl.knx.knx2mqtt.gateway.BusEventGateway#isInitialized()
+	 */
+	@Override
 	public boolean isInitialized() {
 		return client != null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.peterhansl.knx.knx2mqtt.gateway.BusEventGateway#isConnected()
+	 */
+	@Override
 	public boolean isConnected() {
 		return (client != null) && client.isConnected();
 	}
