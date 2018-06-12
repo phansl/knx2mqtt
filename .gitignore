@@ -1,29 +1,28 @@
-.metadata
-bin/
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-.settings/
-.loadpath
-.recommenders
+/target/
+!.mvn/wrapper/maven-wrapper.jar
 
-# Eclipse Core
-.project
+### Decision Service h2 databse ###
+/data/
 
-# External tool builders
-.externalToolBuilders/
-
-# Locally stored "Eclipse launch configurations"
-*.launch
-
-# other Java related
+### STS ###
+.apt_generated
 .classpath
 .factorypath
-.apt_generated
-target
+.project
+.settings
+.springBeans
+.sts4-cache
 
-# Git
-.git
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
