@@ -99,17 +99,19 @@ public class BusProcessListener extends ProcessListenerEx implements ProcessList
 				gateway.publishAsync("home.knx", msg);
 			}
 			
-			LOG.debug("groupWrite to {} [{}] - {}: {}", 
+			LOG.debug("groupWrite to {} [{}] - {}: {} (Priority: {})", 
 					groupWriteEvent.getDestination(), 
 					groupWriteEvent.getDestination().getRawAddress(), 
 					dp.getName(),
-					value);
+					value,
+					dp.getPriority());
 		} else {
 			unknown = "unknown.";
-			LOG.debug("groupWrite to {} [{}] - {}", 
+			LOG.debug("groupWrite to {} [{}] - {} (Priority: {})", 
 					groupWriteEvent.getDestination(), 
 					groupWriteEvent.getDestination().getRawAddress(), 
-					unknown);
+					unknown,
+					dp.getPriority());
 			
 		}
 		

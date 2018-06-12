@@ -106,7 +106,7 @@ public class BusMonitor {
 		attach();
 	}
 	
-	@Scheduled(cron = "0/10 * * * * *")
+	@Scheduled(cron = "* * * * * *")
 	public void healthCheck() {
 		if (knxLink == null) {
 			return;
@@ -114,7 +114,7 @@ public class BusMonitor {
 		
 		long lmr = busProcessListener.getLastMessageReceived();
 		long diff = System.currentTimeMillis() - lmr;
-		if (diff > 1000 * 30) {
+		if (diff > 1000 * busMonitorConfiguration.getTimeout()) {
 			reattach();
 		}
 		

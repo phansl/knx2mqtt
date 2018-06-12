@@ -22,6 +22,7 @@ knx:
     local: 192.168.178.62
     router: 192.168.178.52
     nat: true
+    timeout: 30
     groupAddresses:
     # licht
       - address: 1

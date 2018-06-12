@@ -26,6 +26,8 @@ public class BusMonitorConfiguration {
 	
 	private boolean nat = false;
 	
+	private int timeout = 30;
+	
 	private List<GroupAddressConfig> groupAddresses;
 	
 	private Map<Integer, GroupAddressConfig> groupAddressesMap;
@@ -66,6 +68,14 @@ public class BusMonitorConfiguration {
 
 	public void setNat(boolean nat) {
 		this.nat = nat;
+	}
+
+	public int getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
 	}
 
 	public List<GroupAddressConfig> getGroupAddresses() {
