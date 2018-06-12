@@ -2,20 +2,21 @@
 
 server:
     port: 8080
+
+management:
+  security:
+    enabled: false
     
-mqtt:
-    host: ${RABBITMQ_PORT_1883_TCP_ADDR}
-    port: ${RABBITMQ_PORT_1883_TCP_PORT}
-    protocol: ${RABBITMQ_PORT_1883_TCP_PROTO}
-    username: ''
-    password: ''
+    
+#mqtt:
+#    host: ${RABBITMQ_PORT_1883_TCP_ADDR}
+#    port: ${RABBITMQ_PORT_1883_TCP_PORT}
+#    protocol: ${RABBITMQ_PORT_1883_TCP_PROTO}
+#    username: ''
+#    password: ''
     
 amqp:
-   host: 127.0.0.1
-   port: 0
-   protocol:
-   username: 
-   password: 
+   queue: home.knx
 
 knx:
     local: 192.168.178.62
@@ -69,33 +70,46 @@ knx:
       - address: 701
         dpt: '9.001'
         text: 'Ankleide Tür'
+        topics:
+          - 'places.house.floor.first.wardrobe.temperature'
       - address: 702
         dpt: '9.001'
         text: 'Arbeitszimmer Tür'
         topics:
-          - 'places/house/floor/first/homeoffice/temperature'
-          - 'functions/temperatures/homeoffice' 
+          - 'places.house.floor.first.homeoffice.temperature'
       - address: 703
         dpt: '9.001'
         text: 'Schlafzimmer gesamt'
+        topics:
+          - 'places.house.floor.first.sleeping.temperature'
       - address: 704
         dpt: '9.001'
         text: 'Kinderzimmer Süd Tür'
+        topics:
+          - 'places.house.floor.first.childsouth.temperature'
       - address: 705
         dpt: '9.001'
         text: 'Kinderzimmer Nord Tür'
+        topics:
+          - 'places.house.floor.first.childnorth.temperature'
       - address: 706
         dpt: '9.001'
         text: 'Bad Tür'
+        topics:
+          - 'places.house.floor.first.bathroom.temperature'
       - address: 707
         dpt: '9.001'
         text: 'WC Tür'
+        topics:
+          - 'places.house.floor.first.closet.temperature'
       - address: 708
         dpt: '9.001'
         text: 'Flur gesamt'
       - address: 709
         dpt: '9.001'
         text: 'Wohnzimmer gesamt'
+        topics:
+          - 'places.house.floor.first.livingroom.overall.temperature'
       - address: 710
         dpt: '9.001'
         text: 'Kammer'
@@ -147,9 +161,14 @@ spring:
         serialization:
             INDENT_OUTPUT: true
             order-map-entries-by-keys: true
+    rabbitmq:
+        host: localhost
+        port: 5672
+        username: guest
+        password: guest 
 
 logging:
     level:
         it.peterhansl: 'DEBUG'
-        tuwien.auto.calimero: 'DEBUG'
+        tuwien.auto.calimero: 'INFO'
     

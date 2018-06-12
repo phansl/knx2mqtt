@@ -1,7 +1,11 @@
 package it.peterhansl.knx.knx2mqtt.config;
 
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -23,7 +27,23 @@ public class BusMonitorConfiguration {
 	private boolean nat = false;
 	
 	private List<GroupAddressConfig> groupAddresses;
+	
+	private Map<Integer, GroupAddressConfig> groupAddressesMap;
 
+	@PostConstruct
+	public void postConstruct() {
+		groupAddressesMap = new HashMap<>();
+		if (groupAddresses != null) {
+			for (GroupAddressConfig cfg : groupAddresses) {
+				groupAddressesMap.put(cfg.getAddress(), cfg);
+			}
+		}
+	}
+	
+	public Map<Integer, GroupAddressConfig> getGroupAddressesMap() {
+		return groupAddressesMap;
+	}
+	
 	public InetAddress getLocal() {
 		return local;
 	}

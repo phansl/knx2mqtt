@@ -1,14 +1,13 @@
 package it.peterhansl.knx.knx2mqtt.monitor;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.stereotype.Component;
 
+import io.micrometer.core.instrument.Metrics;
 import it.peterhansl.iot.dahome.knx.model.BusEvent;
 import it.peterhansl.knx.knx2mqtt.config.BusMonitorConfiguration;
 import it.peterhansl.knx.knx2mqtt.config.GroupAddressConfig;
@@ -30,11 +29,8 @@ public class BusProcessListener extends ProcessListenerEx implements ProcessList
 	
 	private static final Logger LOG = LoggerFactory.getLogger(BusProcessListener.class);
 	
-	@Inject
-	private BusMonitorConfiguration busMonitorConfiguration;
-	
 	@Autowired
-	private CounterService counterService;
+	private BusMonitorConfiguration busMonitorConfiguration;
 	
 	@Autowired
 	private BusEventGateway gateway;
@@ -90,10 +86,18 @@ public class BusProcessListener extends ProcessListenerEx implements ProcessList
 			BusEvent msg = new BusEvent(
 					dp.getName(),
 					groupWriteEvent.getDestination().getRawAddress(),
+					dp.getMainNumber(),
 					dp.getDPT(),
 					groupWriteEvent.getASDU());
 			
-			gateway.publishAsync("home/test", msg);
+			GroupAddressConfig cfg = busMonitorConfiguration.getGroupAddressesMap().get(msg.getAddress());
+			if ((null != cfg) && (null != cfg.getTopics())) {
+				for (String topic : cfg.getTopics()) {
+					gateway.publishAsync(topic, msg);
+				}
+			} else {
+				gateway.publishAsync("home.knx", msg);
+			}
 			
 			LOG.debug("groupWrite to {} [{}] - {}: {}", 
 					groupWriteEvent.getDestination(), 
@@ -111,8 +115,8 @@ public class BusProcessListener extends ProcessListenerEx implements ProcessList
 		
 		
 		// update metrics
-		counterService.increment("counter.knx.groupWrite.total");
-		counterService.increment("counter.knx.groupWrite." + unknown + groupWriteEvent.getDestination().getRawAddress());
+		Metrics.counter("counter.knx.groupWrite.total").increment();
+		Metrics.counter("counter.knx.groupWrite." + unknown + groupWriteEvent.getDestination().getRawAddress()).increment();
 	}
 
 	@Override

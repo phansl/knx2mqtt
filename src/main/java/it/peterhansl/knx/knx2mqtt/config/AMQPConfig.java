@@ -1,7 +1,9 @@
 package it.peterhansl.knx.knx2mqtt.config;
 
-import java.net.InetAddress;
-
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -16,45 +18,26 @@ import lombok.Data;
 @Data
 public class AMQPConfig {
 	
-	private static final String DEFAULT_CLIENT_NAME = "knx2amqp";
-
-	private String clientName;
-	
-	private InetAddress host;
-	
-	private int port;
-	
-	private String protocol;
-	
-	private String username;
-	
-	private String password;
+	private String queue;
 	
 	@Bean
-	@ConditionalOnProperty(prefix = "amqp", value = "host", matchIfMissing = false)
+	@ConditionalOnProperty(prefix = "amqp", value = "queue", matchIfMissing = false)
 	public BusEventGateway busEventGateway() {
-		return new AMQPGateway(this);
+		return new AMQPGateway();
 	}
-
-	public String getClientName() {
-		if (clientName == null) {
-			clientName = DEFAULT_CLIENT_NAME;
-		}
-		return clientName;
-	}
-
-	public String getConnectionURLString() {
-		StringBuilder connString = new StringBuilder();
-		
-		connString.append(protocol);
-		connString.append("://");
-		connString.append(host.getHostAddress());
-		connString.append(":");
-		connString.append(port);
-		
-		return connString.toString();
-	}
-
 	
-
+	@Bean
+	@ConditionalOnProperty(prefix = "amqp", value = "queue", matchIfMissing = false)
+    public MessageConverter rabbitJsonMessageConverter(){
+        return new Jackson2JsonMessageConverter();
+    }
+	
+	@Bean
+	@ConditionalOnProperty(prefix = "amqp", value = "queue", matchIfMissing = false)
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,MessageConverter rabbitJsonMessageConverter) {
+	    RabbitTemplate template = new RabbitTemplate(connectionFactory);
+	    template.setMessageConverter(rabbitJsonMessageConverter);
+	    return template;
+	}
+	
 }
